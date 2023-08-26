@@ -3,6 +3,10 @@ import string
 import random
 import datetime
 from dateutil.relativedelta import relativedelta
+import tkinter
+from tkinter import messagebox
+from tkinter import *
+
 
 
 mycon = mys.connect(host = 'localhost', user = 'root', passwd = 'Nitish@1006', database = 'pwd_manager')
@@ -103,7 +107,40 @@ def display():
             k = k + 1
 
         print(passw,p3,a,p1,b,p2,c)
-            
+    print()
+def display_exp():
+    mycur.execute("Select * from exp")
+    result = mycur.fetchall()
+    print("PASSID\t\tUsername\t\tPassword\t\tExpiry_Date")
+    for row in result:
+        a = row[0]
+        b = row[1]
+        c = row[2]
+        d = row[3]
+        i = j = k = 1
+        while True:
+            if i == 14 or j == 20 or k == 20:
+                break
+            else:
+                if len(str(a)) == i:
+                    p1 = ""
+                    for p in range(13-i):
+                        p1 = p1 + " "
+                    p1 = p1 + " "
+                if len(b) == j:
+                    p2 = " "
+                    for p in range(21-j):
+                        p2 = p2 + " "
+                    
+                if len(str(c)) == k:
+                    p3 = " "
+                    for p in range(21-k):
+                        p3 = p3 + " "
+            i = i + 1
+            j = j + 1
+            k = k + 1
+        print(a,p1,b,p2,c,p3,d)
+    print()
 def passid_():
     mycur.execute("select * from Manager;")
     d = mycur.fetchall()
