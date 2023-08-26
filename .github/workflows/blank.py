@@ -2,6 +2,7 @@ import mysql.connector as mys
 import string
 import random
 import datetime
+from dateutil.relativedelta import relativedelta
 
 
 mycon = mys.connect(host = 'localhost', user = 'root', passwd = 'Nitish@1006', database = 'pwd_manager')
@@ -47,7 +48,6 @@ def generate():
 
 def create():
     mycur.execute("create table Manager(PassID int primary key, Website_URL varchar(50), Username varchar(20), Password varchar(20));")
-    mycur.execute("create table exp(passid_ int primary key, username varchar(30), password varchar(20), exp_date date);")
     mycon.commit()
 
 def insert(p):
@@ -62,7 +62,9 @@ Enter 1 to generate strong password: '''))
     mycur.execute("insert into Manager values('%s','%s','%s','%s');"%(p,a,b,c))
     ######################
     x = datetime.datetime.now()
-    mycur.execute("insert into exp values('%s','%s','%s','%s')"%(p,b,c,x))  #-------------
+    result = x + relativedelta(months=+1)
+    
+    mycur.execute("insert into exp values('%s','%s','%s','%s')"%(p,b,c,str(result)))  #-------------
     mycon.commit()
     ##############################
     mycon.commit()
@@ -121,6 +123,9 @@ def loopin(a):
         b = str(a)
         insert(b)
 
+def imp_exp():
+    mycur.execute("Select * from manager")
+   
         
     
 #-------------------------------------------------------------------------------------------------------------------------------------
