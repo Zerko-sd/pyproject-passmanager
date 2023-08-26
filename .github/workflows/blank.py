@@ -47,6 +47,7 @@ def generate():
 
 def create():
     mycur.execute("create table Manager(PassID int primary key, Website_URL varchar(50), Username varchar(20), Password varchar(20));")
+    mycur.execute("create table exp(passid_ int primary key, username varchar(30), password varchar(20), exp_date date);")
     mycon.commit()
 
 def insert(p):
