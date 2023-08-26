@@ -63,15 +63,21 @@ Enter 1 to generate strong password: '''))
         c = input("Enter Password: ")
     elif t == 1:
         c = generate()
-    mycur.execute("insert into Manager values('%s','%s','%s','%s');"%(p,a,b,c))
+    
+    ######################
+    mycur.execute("insert into Manager values('%s','%s','%s','%s')"%(p,a,b,c))
+    mycon.commit()
     ######################
     x = datetime.datetime.now()
     result = x + relativedelta(months=+1)
-    
+    log = open("C:\\Users\\schit\\Downloads\\activity_log\\"+str(p)+".txt","a+")
+    upd = [a,b,"Changed to "+c,"At The Date And Time:",datetime.datetime.now()]
+    log.write(str(upd))
+    log.close()
+
     mycur.execute("insert into exp values('%s','%s','%s','%s')"%(p,b,c,str(result)))  #-------------
     mycon.commit()
     ##############################
-    mycon.commit()
     print("Insertion complete!")
 def display():
     mycur.execute("SELECT * FROM Manager")
@@ -160,10 +166,16 @@ def loopin(a):
         b = str(a)
         insert(b)
 
-def imp_exp():
+def export():
     mycur.execute("Select * from manager")
-   
-        
+    main = mycur.fetchall()
+    a = open("C:\\Users\\schit\\Downloads\\export.txt","w+")
+    for i in main:
+        a.write(str(i)+"\n")
+    a.close()
+
+
+
     
 #-------------------------------------------------------------------------------------------------------------------------------------
 # Function Calls:
