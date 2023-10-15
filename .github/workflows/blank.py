@@ -177,6 +177,7 @@ def loopin(a):
         insert(b)
 
 def export():
+    print(30*"-","Export",30*"-")
     mycur.execute("Select * from manager")
     main = mycur.fetchall()
     a = open("C:\\Users\\schit\\Downloads\\export.txt","w+")
@@ -185,6 +186,7 @@ def export():
     a.close()
 
 def upd():
+    print(30*"-","Updating",30*"-")
     auth = input("Enter Master key: ")
     if auth == MKEY:
         rID = input("Enter PassID of password to be updated: ")
@@ -201,11 +203,6 @@ def upd():
 
     
 #-------------------------------------------------------------------------------------------------------------------------------------
-# Function Calls:
-
-#create()a = passid_()loopin(a)
-#display()
-#mycur.execute("drop table Manager;")mycon.commit()
 
 
 '''-------------------main--------------------'''
