@@ -59,6 +59,7 @@ def create():
     mycon.commit()
 
 def insert(p):
+    print(30*"-","Insertation",30*"-")
     a = input("Enter Website URL: ")
     b = input("Enter Username: ")
     t = int(input('''Enter 0 to Enter own password!
@@ -94,6 +95,7 @@ Enter 1 to generate strong password: '''))
 def display():
     x = input("Enter Master Key: ")
     if x == MKEY:
+        print(30*"-","Displaying",30*"-")
         mycur.execute("SELECT * FROM manager")
         result = list(mycur.fetchall())
         print(tabulate(result, headers=['Password ID', 'Website URL', 'Username','Password'], tablefmt='fancy_outline'))
@@ -113,6 +115,7 @@ def passid_():
         return passid
 
 def delete():
+    print(30*"-","Deletion",30*"-")
     p = passid_()
     auth = input("Enter Master key: ")
     if auth == MKEY:
@@ -130,6 +133,7 @@ def delete():
         time.sleep(3)
 
 def display_exp():
+    print(30*"-","Display",30*"-")
     x = input("Enter Master Key: ")
     if x == MKEY:
         mycur.execute("Select * from exp")
@@ -153,10 +157,11 @@ def exp_delete():
             continue
 
 def retrieve():
+    print(30*"-","Retrieve",30*"-")
     auth = input("Enter Master key: ")
     if auth == MKEY:
-        rurl = input("Enter URL of password to be deleted: ")
-        ruser = input("Enter Username of password to be deleted: ")
+        rurl = input("Enter URL of password to be retrieved: ")
+        ruser = input("Enter Username of password to be retrieved: ")
         mycur.execute("select Password from manager where Username='%s' and Website_URL = '%s';"%(ruser,rurl))
         pswd = mycur.fetchone()
         print("Desired Password: ", pswd)
@@ -227,7 +232,9 @@ while flag == True:
             print("2.Delete Existing Account")
             print("3.Updation of records")
             print("4.View All Saved Data")
-            print("5.Exit")
+            print("5.Retrieve Passwords")
+            print("6.Exporting Passwords")
+            print("7.exit")
             inpp = int(input(":"))
             
             if inpp == 1:
@@ -257,6 +264,18 @@ while flag == True:
                 print()
                 # view all saved data    
             elif inpp == 5:
+                os.system('cls')
+                retrieve()
+                time.sleep(10)
+            elif inpp == 6:
+                os.system('cls')
+                print("Password Exporting in progress....")
+                export()
+                time.sleep(3)
+                print("Process Done!")
+                time.sleep(3)
+
+            elif inpp == 7:
                 os.system('cls')
                 exit()
         else:
