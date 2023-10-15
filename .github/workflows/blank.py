@@ -238,12 +238,14 @@ while flag == True:
                 os.system('cls')
                 p = passid_()
                 insert(p)
+                umm = input("Press any key to exit...")
                 os.system('cls')  
                 # add the account thing function
             elif inpp == 2:
                 os.system('cls')
                 delete()
                 exp_delete()
+                umm = input("Press any key to exit...")
                 os.system('cls')
                 print()
                     
@@ -251,6 +253,7 @@ while flag == True:
             elif inpp == 3:
                 os.system('cls')
                 upd()
+                umm = input("Press any key to exit...")
                 print()
                 # update info of an account
             elif inpp == 4:
@@ -263,7 +266,8 @@ while flag == True:
             elif inpp == 5:
                 os.system('cls')
                 retrieve()
-                time.sleep(10)
+                dumm = input("Press any key to exit...")
+            
             elif inpp == 6:
                 os.system('cls')
                 print("Password Exporting in progress....")
@@ -274,6 +278,7 @@ while flag == True:
 
             elif inpp == 7:
                 os.system('cls')
+                umm = input("Press any key to exit...")
                 exit()
         else:
             os.system('cls')
