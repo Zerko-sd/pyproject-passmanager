@@ -65,17 +65,18 @@ def insert(p):
 Enter 1 to generate strong password: '''))
     if t == 0:
         c = input("Enter Password: ")
-        print("Password addition done!")
+        print("Password addition/updation done!")
         print("Exiting now")
         time.sleep(3)
     elif t == 1:
         c = generate()
-        print("Password addition done!")
+        print("Password addition/updation done!")
         print("Exiting now")
         time.sleep(3)
         
     ######################
     mycur.execute("insert into manager values(%s,'%s','%s','%s')"%(p,a,b,c))
+    mycur.execute("insert into dummy values(%s,'%s','%s','%s')"%(p,a,b,c))
     mycon.commit()
     ######################
     x = datetime.datetime.now()
@@ -89,19 +90,19 @@ Enter 1 to generate strong password: '''))
     mycon.commit()
     ##############################
     print("Insertion complete!")
+    os.system('cls')
 def display():
     x = input("Enter Master Key: ")
     if x == MKEY:
-        mycur.execute("SELECT * FROM Manager")
+        mycur.execute("SELECT * FROM manager")
         result = list(mycur.fetchall())
         print(tabulate(result, headers=['Password ID', 'Website URL', 'Username','Password'], tablefmt='fancy_outline'))
     else:
         print("Incorrect Master key")
 
 def passid_():
-    mycur.execute("select * from Manager;")
+    mycur.execute("select * from dummy;")
     d = mycur.fetchall()
-    print(d)
     ap = len(d)
 
     if ap != 0:
@@ -112,7 +113,7 @@ def passid_():
         return passid
 
 def delete():
-    passid_()
+    p = passid_()
     auth = input("Enter Master key: ")
     if auth == MKEY:
         rurl = input("Enter URL of password to be deleted: ")
@@ -145,7 +146,7 @@ def exp_delete():
     for i in t:
         if i[3] == x:
             p = i[0]
-            mycur.execute('delete from Manager where PassID=%s;'%(p,))
+            mycur.execute('delete from manager where PassID=%s;'%(p,))
             mycur.execute('delete from exp where passid_=%s;'%(p,))
             mycon.commit()
         else:
@@ -154,8 +155,9 @@ def exp_delete():
 def retrieve():
     auth = input("Enter Master key: ")
     if auth == MKEY:
-        rurl, ruser = input("Enter URL and Username of password to be retrieved: ")
-        mycur.execute("select Password from Manager where Username='%s' and Website_URL = '%s';"%(ruser,rurl))
+        rurl = input("Enter URL of password to be deleted: ")
+        ruser = input("Enter Username of password to be deleted: ")
+        mycur.execute("select Password from manager where Username='%s' and Website_URL = '%s';"%(ruser,rurl))
         pswd = mycur.fetchone()
         print("Desired Password: ", pswd)
     else:
@@ -177,8 +179,20 @@ def export():
         a.write(str(i)+"\n")
     a.close()
 
-def Openfolder():
-  open("C:\\Users\\schit\\Downloads\\activity_log") 
+def upd():
+    auth = input("Enter Master key: ")
+    if auth == MKEY:
+        rID = input("Enter PassID of password to be updated: ")
+        mycur.execute("delete from manager where PassID = %s;"%(rID,))
+        mycon.commit()
+        print("wait a moment...")
+        time.sleep(3)
+        p = passid_()
+        insert(p)
+        print("Completed updation!")
+    else:
+        print("Incorrect Master Key")
+
 
     
 #-------------------------------------------------------------------------------------------------------------------------------------
@@ -211,7 +225,7 @@ while flag == True:
             print()
             print("1.Add New Account")
             print("2.Delete Existing Account")
-            print("3.Open Activity Logs")
+            print("3.Updation of records")
             print("4.View All Saved Data")
             print("5.Exit")
             inpp = int(input(":"))
@@ -232,7 +246,7 @@ while flag == True:
                 # delete the account thing function
             elif inpp == 3:
                 os.system('cls')
-                Openfolder()
+                upd()
                 print()
                 # update info of an account
             elif inpp == 4:
