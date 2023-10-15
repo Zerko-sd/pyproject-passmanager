@@ -3,20 +3,20 @@ import string
 import random
 import datetime
 from dateutil.relativedelta import relativedelta
-import tkinter
-from tkinter import messagebox
-from tkinter import *
+from tabulate import tabulate
+
+MKEY = "xyz"                                                                  #For now, I assumed value for Master key
 
 
 
-mycon = mys.connect(host = 'localhost', user = 'root', passwd = 'Nitish@1006', database = 'pwd_manager')
+mycon = mys.connect(host = 'localhost', user = 'root', passwd = '0408', database = 'pwd_manager')
 mycur = mycon.cursor()
-
-
-
 def generate():
     passw = ''
     symbols = string.punctuation
+    symbols = list(symbols.partition(" "))
+    symbols.pop(1)
+    symbols = symbols[0] + symbols[1]
     lst_symbols = []
     lst_numb = []
     lst_aplUP = []
@@ -49,12 +49,12 @@ def generate():
             passw += input_thing
     return passw
 
-
 def create():
     mycur.execute("create table Manager(PassID int primary key, Website_URL varchar(50), Username varchar(20), Password varchar(20));")
+    mycur.execute("create table exp(passid_ int primary key, username varchar(30), password varchar(20), exp_date date);")
     mycon.commit()
 
-def insert(p):
+def insert(p):                                                                          # Loop for insert begins with loopin(passid_()) function
     a = input("Enter Website URL: ")
     b = input("Enter Username: ")
     t = int(input('''Enter 0 to choose own password!
@@ -63,129 +63,90 @@ Enter 1 to generate strong password: '''))
         c = input("Enter Password: ")
     elif t == 1:
         c = generate()
-    
-    ######################
-    mycur.execute("insert into Manager values('%s','%s','%s','%s')"%(p,a,b,c))
-    mycon.commit()
-    ######################
+    mycur.execute("insert into Manager values(%s,'%s','%s','%s');"%(p,a,b,c))
+
     x = datetime.datetime.now()
     result = x + relativedelta(months=+1)
-    log = open("C:\\Users\\schit\\Downloads\\activity_log\\"+str(p)+".txt","a+")
-    upd = [a,b,"Changed to "+c,"At The Date And Time:",datetime.datetime.now()]
-    log.write(str(upd))
-    log.close()
 
-    mycur.execute("insert into exp values('%s','%s','%s','%s')"%(p,b,c,str(result)))  #-------------
+    mycur.execute("insert into exp values(%s,'%s','%s','%s')"%(p,b,c,str(result)))
     mycon.commit()
-    ##############################
+
     print("Insertion complete!")
+
 def display():
-    mycur.execute("SELECT * FROM Manager")
-    result = mycur.fetchall()
-    print("PASSID\t\tWebsite_URL\t\t Username\t\tPassword")
-    for row in result:
-        passw = row[0]
-        a = row[1]
-        b = row[2]
-        c = row[3]
-        i = j = k = 1
-        while True:
-            if i == 23 or j == 20 or k == 14:
-                break
-            else:
-                if len(a) == i:
-                    p1 = ""
-                    for p in range(22-i):
-                        p1 = p1 + " "
-                    p1 = p1 + " "
-                if len(b) == j:
-                    p2 = ""
-                    for p in range(21-j):
-                        p2 = p2 + " "
-                    
-                if len(str(passw)) == k:
-                    p3 = ""
-                    for p in range(14-k):
-                        p3 = p3 + " "
-
-            i = i + 1
-            j = j + 1
-            k = k + 1
-
-        print(passw,p3,a,p1,b,p2,c)
-    print()
+    x = input("Enter Master Key: ")
+    if x == MKEY:
+        mycur.execute("SELECT * FROM Manager")
+        result = list(mycur.fetchall())
+        print(tabulate(result, headers=['Password ID', 'Website URL', 'Username','Password'], tablefmt='fancy_outline'))
+    else:
+        print("Incorrect Master key")
 def display_exp():
-    mycur.execute("Select * from exp")
-    result = mycur.fetchall()
-    print("PASSID\t\tUsername\t\tPassword\t\tExpiry_Date")
-    for row in result:
-        a = row[0]
-        b = row[1]
-        c = row[2]
-        d = row[3]
-        i = j = k = 1
-        while True:
-            if i == 14 or j == 20 or k == 20:
-                break
-            else:
-                if len(str(a)) == i:
-                    p1 = ""
-                    for p in range(13-i):
-                        p1 = p1 + " "
-                    p1 = p1 + " "
-                if len(b) == j:
-                    p2 = " "
-                    for p in range(21-j):
-                        p2 = p2 + " "
-                    
-                if len(str(c)) == k:
-                    p3 = " "
-                    for p in range(21-k):
-                        p3 = p3 + " "
-            i = i + 1
-            j = j + 1
-            k = k + 1
-        print(a,p1,b,p2,c,p3,d)
-    print()
-def passid_():
+    x = input("Enter Master Key: ")
+    if x == MKEY:
+        mycur.execute("Select * from exp")
+        result = mycur.fetchall()
+        print(tabulate(result, headers=['Password ID', 'Username', 'Password','Expiry Date'], tablefmt='fancy_outline'))
+    else:
+        print("Incorrect Master key")
+
+def delete():
+    auth = input("Enter Master key: ")
+    if auth == MKEY:
+        rurl, ruser = input("Enter URL and Username of password to be retrieved: ")
+        mycur.execute("select * from Manger;")
+        d = mycur.fetchall()
+        for i in d:
+            if i[1] == rurl and i[2] = ruser:
+                p = i[0]
+        mycur.execute("delete from Manager where PassID=%s;"%(p,))
+        mycur.execute("delete from exp where passid=%s;"%(p,))
+        mycon.commit()
+    
+def exp_delete():
+    x = datetime.date.today()
+    mycur.execute("select * from exp;")
+    t = mycur.fetchall()
+    for i in t:
+        if i[3] == x:
+            p = i[0]
+            mycur.execute('delete from Manager where PassID=%s;'%(p,))
+            mycur.execute('delete from exp where passid_=%s;'%(p,))
+            mycon.commit()
+        else:
+            continue
+
+
+def retrieve():
+    auth = input("Enter Master key: ")
+    if auth == MKEY:
+        rurl, ruser = input("Enter URL and Username of password to be retrieved: ")
+        mycur.execute("select Password from Manager where Username='%s' and Website_URL = '%s';"%(ruser,rurl))
+        pswd = mycur.fetchone()
+        print("Desired Password: ", pswd)
+    else:
+        print("Incorrect Master Key")
+    
+def passid_():                                               # Checks for latest password ID and returns value for loopin() function
     mycur.execute("select * from Manager;")
     d = mycur.fetchall()
-    print(d)
     ap = len(d)
-
     if ap != 0:
         passid = ap
         return passid
     elif ap == 0:
         passid = 0
         return passid
-def loopin(a):
+def loopin(a):                                               # Takes arg from passid_() and starts inserting record using insert()
     n = int(input("N: "))
     for i in range(n):
         a = a + 1
         b = str(a)
         insert(b)
 
-def export():
-    mycur.execute("Select * from manager")
-    main = mycur.fetchall()
-    a = open("C:\\Users\\schit\\Downloads\\export.txt","w+")
-    for i in main:
-        a.write(str(i)+"\n")
-    a.close()
 
-
-
-    
-#-------------------------------------------------------------------------------------------------------------------------------------
+#___________________________________________________________________________________________
 # Function Calls:
-
-#create()a = passid_()loopin(a)
-#display()
-#mycur.execute("drop table Manager;")mycon.commit()
-p = passid_()
-insert(p)
-
 
 
 
