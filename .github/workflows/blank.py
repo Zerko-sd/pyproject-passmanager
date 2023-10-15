@@ -3,14 +3,17 @@ import string
 import random
 import datetime
 from dateutil.relativedelta import relativedelta
+import os
+import time
+import sys
 from tabulate import tabulate
 
-MKEY = "xyz"                                                                  #For now, I assumed value for Master key
 
-
-
-mycon = mys.connect(host = 'localhost', user = 'root', passwd = '0408', database = 'pwd_manager')
+mycon = mys.connect(host = 'localhost', user = 'root', passwd = 'Nitish@1006', database = 'pwd_manager')
 mycur = mycon.cursor()
+MKEY = "xyz"       
+
+
 def generate():
     passw = ''
     symbols = string.punctuation
@@ -49,30 +52,43 @@ def generate():
             passw += input_thing
     return passw
 
+
 def create():
     mycur.execute("create table Manager(PassID int primary key, Website_URL varchar(50), Username varchar(20), Password varchar(20));")
     mycur.execute("create table exp(passid_ int primary key, username varchar(30), password varchar(20), exp_date date);")
     mycon.commit()
 
-def insert(p):                                                                          # Loop for insert begins with loopin(passid_()) function
+def insert(p):
     a = input("Enter Website URL: ")
     b = input("Enter Username: ")
-    t = int(input('''Enter 0 to choose own password!
+    t = int(input('''Enter 0 to Enter own password!
 Enter 1 to generate strong password: '''))
     if t == 0:
         c = input("Enter Password: ")
+        print("Password addition done!")
+        print("Exiting now")
+        time.sleep(3)
     elif t == 1:
         c = generate()
-    mycur.execute("insert into Manager values(%s,'%s','%s','%s');"%(p,a,b,c))
-
+        print("Password addition done!")
+        print("Exiting now")
+        time.sleep(3)
+        
+    ######################
+    mycur.execute("insert into manager values(%s,'%s','%s','%s')"%(p,a,b,c))
+    mycon.commit()
+    ######################
     x = datetime.datetime.now()
     result = x + relativedelta(months=+1)
+    log = open("C:\\Users\\schit\\Downloads\\activity_log\\"+str(p)+".txt","a+")
+    upd = [a,b,"Changed to "+c,"At The Date And Time:",datetime.datetime.now()]
+    log.write(str(upd))
+    log.close()
 
-    mycur.execute("insert into exp values(%s,'%s','%s','%s')"%(p,b,c,str(result)))
+    mycur.execute("insert into exp values(%s,'%s','%s','%s')"%(p,b,c,str(result)))  #-------------
     mycon.commit()
-
+    ##############################
     print("Insertion complete!")
-
 def display():
     x = input("Enter Master Key: ")
     if x == MKEY:
@@ -81,6 +97,37 @@ def display():
         print(tabulate(result, headers=['Password ID', 'Website URL', 'Username','Password'], tablefmt='fancy_outline'))
     else:
         print("Incorrect Master key")
+
+def passid_():
+    mycur.execute("select * from Manager;")
+    d = mycur.fetchall()
+    print(d)
+    ap = len(d)
+
+    if ap != 0:
+        passid = ap
+        return passid
+    elif ap == 0:
+        passid = 0
+        return passid
+
+def delete():
+    passid_()
+    auth = input("Enter Master key: ")
+    if auth == MKEY:
+        rurl = input("Enter URL of password to be deleted: ")
+        ruser = input("Enter Username of password to be deleted: ")
+        mycur.execute("select * from manager;")
+        d = mycur.fetchall()
+        for i in d:
+            if i[1] == rurl and i[2] == ruser:
+                p = i[0]
+        mycur.execute("delete from manager where PassID=%s;"%(p,))
+        mycur.execute("delete from exp where passid_=%s;"%(p,))
+        mycon.commit()
+        print("Process Done!")
+        time.sleep(3)
+
 def display_exp():
     x = input("Enter Master Key: ")
     if x == MKEY:
@@ -90,19 +137,7 @@ def display_exp():
     else:
         print("Incorrect Master key")
 
-def delete():
-    auth = input("Enter Master key: ")
-    if auth == MKEY:
-        rurl, ruser = input("Enter URL and Username of password to be retrieved: ")
-        mycur.execute("select * from Manger;")
-        d = mycur.fetchall()
-        for i in d:
-            if i[1] == rurl and i[2] = ruser:
-                p = i[0]
-        mycur.execute("delete from Manager where PassID=%s;"%(p,))
-        mycur.execute("delete from exp where passid=%s;"%(p,))
-        mycon.commit()
-    
+
 def exp_delete():
     x = datetime.date.today()
     mycur.execute("select * from exp;")
@@ -116,7 +151,6 @@ def exp_delete():
         else:
             continue
 
-
 def retrieve():
     auth = input("Enter Master key: ")
     if auth == MKEY:
@@ -126,28 +160,91 @@ def retrieve():
         print("Desired Password: ", pswd)
     else:
         print("Incorrect Master Key")
-    
-def passid_():                                               # Checks for latest password ID and returns value for loopin() function
-    mycur.execute("select * from Manager;")
-    d = mycur.fetchall()
-    ap = len(d)
-    if ap != 0:
-        passid = ap
-        return passid
-    elif ap == 0:
-        passid = 0
-        return passid
-def loopin(a):                                               # Takes arg from passid_() and starts inserting record using insert()
+
+
+def loopin(a):
     n = int(input("N: "))
     for i in range(n):
         a = a + 1
         b = str(a)
         insert(b)
 
+def export():
+    mycur.execute("Select * from manager")
+    main = mycur.fetchall()
+    a = open("C:\\Users\\schit\\Downloads\\export.txt","w+")
+    for i in main:
+        a.write(str(i)+"\n")
+    a.close()
 
-#___________________________________________________________________________________________
-# Function Calls:
-
-
+def Openfolder():
+  open("C:\\Users\\schit\\Downloads\\activity_log") 
 
     
+#-------------------------------------------------------------------------------------------------------------------------------------
+# Function Calls:
+
+#create()a = passid_()loopin(a)
+#display()
+#mycur.execute("drop table Manager;")mycon.commit()
+
+
+'''-------------------main--------------------'''
+
+flag = True
+while flag == True:
+    print(15*'~'+'  Password Manager  '+15*'~')
+    print()
+    username = input("Enter Your Username: ")
+    if username == "admin":
+        os.system('cls')
+        print(15*'~'+'  Password Manager  '+15*'~')
+        print()
+        print("Username :"+username)
+        print()
+        passwrd = input("Enter Your Password: ")
+        if passwrd == "admin":
+            print("Access Granted...Welcome Back!")
+            time.sleep(3)
+            os.system('cls')
+            print(15*"-","   Menu   ",15*'-')
+            print()
+            print("1.Add New Account")
+            print("2.Delete Existing Account")
+            print("3.Open Activity Logs")
+            print("4.View All Saved Data")
+            print("5.Exit")
+            inpp = int(input(":"))
+            
+            if inpp == 1:
+                os.system('cls')
+                p = passid_()
+                insert(p)
+                os.system('cls')  
+                # add the account thing function
+            elif inpp == 2:
+                os.system('cls')
+                delete()
+                exp_delete()
+                os.system('cls')
+                print()
+                    
+                # delete the account thing function
+            elif inpp == 3:
+                os.system('cls')
+                Openfolder()
+                print()
+                # update info of an account
+            elif inpp == 4:
+                os.system('cls')
+                display()
+                dumm = input("Press any key to exit...")
+                os.system('cls')
+                print()
+                # view all saved data    
+            elif inpp == 5:
+                os.system('cls')
+                exit()
+        else:
+            os.system('cls')
+            break
