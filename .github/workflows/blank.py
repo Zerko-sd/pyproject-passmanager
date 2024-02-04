@@ -5,13 +5,13 @@ import datetime
 from dateutil.relativedelta import relativedelta
 import os
 import time
-import sys
 from tabulate import tabulate
+import pyperclip
 
 
 mycon = mys.connect(host = 'localhost', user = 'root', passwd = 'Nitish@1006', database = 'pwd_manager')
 mycur = mycon.cursor()
-MKEY = "xyz"       
+MKEY = "XYZ"       
 
 
 def generate():
@@ -50,6 +50,7 @@ def generate():
             l = random.randint(0,len(lst_aplLO)-1)
             input_thing = lst_aplLO[l]
             passw += input_thing
+    pyperclip.copy(passw)
     return passw
 
 
@@ -59,7 +60,7 @@ def create():
     mycon.commit()
 
 def insert(p):
-    print(30*"-","Insertation",30*"-")
+    print(30*"-","Insertion",30*"-")
     a = input("Enter Website URL: ")
     b = input("Enter Username: ")
     t = int(input('''Enter 0 to Enter own password!
@@ -71,9 +72,12 @@ Enter 1 to generate strong password: '''))
         time.sleep(3)
     elif t == 1:
         c = generate()
+        print("The password has been copied to clipboard!")
+        print(c)
+
         print("Password addition/updation done!")
         print("Exiting now")
-        time.sleep(3)
+        time.sleep(4)
         
     ######################
     mycur.execute("insert into manager values(%s,'%s','%s','%s')"%(p,a,b,c))
@@ -132,29 +136,7 @@ def delete():
         print("Process Done!")
         time.sleep(3)
 
-def display_exp():
-    print(30*"-","Display",30*"-")
-    x = input("Enter Master Key: ")
-    if x == MKEY:
-        mycur.execute("Select * from exp")
-        result = mycur.fetchall()
-        print(tabulate(result, headers=['Password ID', 'Username', 'Password','Expiry Date'], tablefmt='fancy_outline'))
-    else:
-        print("Incorrect Master key")
 
-
-def exp_delete():
-    x = datetime.date.today()
-    mycur.execute("select * from exp;")
-    t = mycur.fetchall()
-    for i in t:
-        if i[3] == x:
-            p = i[0]
-            mycur.execute('delete from manager where PassID=%s;'%(p,))
-            mycur.execute('delete from exp where passid_=%s;'%(p,))
-            mycon.commit()
-        else:
-            continue
 
 def retrieve():
     print(30*"-","Retrieve",30*"-")
@@ -168,13 +150,6 @@ def retrieve():
     else:
         print("Incorrect Master Key")
 
-
-def loopin(a):
-    n = int(input("N: "))
-    for i in range(n):
-        a = a + 1
-        b = str(a)
-        insert(b)
 
 def export():
     print(30*"-","Export",30*"-")
@@ -209,17 +184,18 @@ def upd():
 
 flag = True
 while flag == True:
+    os.system('cls')
     print(15*'~'+'  Password Manager  '+15*'~')
     print()
     username = input("Enter Your Username: ")
-    if username == "admin":
+    if username == "Nitish123":
         os.system('cls')
         print(15*'~'+'  Password Manager  '+15*'~')
         print()
         print("Username :"+username)
         print()
         passwrd = input("Enter Your Password: ")
-        if passwrd == "admin":
+        if passwrd == "Admin":
             print("Access Granted...Welcome Back!")
             time.sleep(3)
             os.system('cls')
